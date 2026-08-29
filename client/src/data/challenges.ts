@@ -1,0 +1,125 @@
+export interface Challenge {
+  id: number;
+  title: string;
+  category: "romantique" | "aventure" | "créatif" | "quotidien" | "surprise" | "voyage" | "gourmand" | "bien-être";
+  emoji: string;
+}
+
+export const challenges: Challenge[] = [
+  // Romantique (1-15)
+  { id: 1, title: "Regarder un coucher de soleil ensemble", category: "romantique", emoji: "🌅" },
+  { id: 2, title: "Écrire une lettre d'amour à l'autre", category: "romantique", emoji: "💌" },
+  { id: 3, title: "Danser ensemble dans le salon", category: "romantique", emoji: "💃" },
+  { id: 4, title: "Se préparer un dîner aux chandelles", category: "romantique", emoji: "🕯️" },
+  { id: 5, title: "Se donner un surnom secret", category: "romantique", emoji: "🤫" },
+  { id: 6, title: "Se faire un bisou sous la pluie", category: "romantique", emoji: "🌧️" },
+  { id: 7, title: "Regarder votre film préféré avec des pop-corns", category: "romantique", emoji: "🍿" },
+  { id: 8, title: "Se réveiller ensemble et rester au lit toute la matinée", category: "romantique", emoji: "☀️" },
+  { id: 9, title: "Se faire un pique-nique dans le jardin ou au parc", category: "romantique", emoji: "🧺" },
+  { id: 10, title: "Créer une playlist de vos chansons", category: "romantique", emoji: "🎵" },
+  { id: 11, title: "S'offrir mutuellement un petit cadeau surprise", category: "romantique", emoji: "🎁" },
+  { id: 12, title: "Prendre un bain ou une douche ensemble", category: "romantique", emoji: "🛁" },
+  { id: 13, title: "Regarder les étoiles ensemble", category: "romantique", emoji: "⭐" },
+
+  // Aventure (14-28)
+  { id: 14, title: "Faire une randonnée ensemble", category: "aventure", emoji: "🥾" },
+  { id: 15, title: "Essayer un sport qu'on n'a jamais fait", category: "aventure", emoji: "🏄" },
+  { id: 16, title: "Explorer un quartier inconnu de votre ville", category: "aventure", emoji: "🗺️" },
+  { id: 17, title: "Faire du vélo ensemble", category: "aventure", emoji: "🚴" },
+  { id: 18, title: "Aller nager dans un lac ou la mer", category: "aventure", emoji: "🏊" },
+  { id: 19, title: "Faire un road trip d'une journée", category: "aventure", emoji: "🚗" },
+  { id: 20, title: "Visiter un musée ensemble", category: "aventure", emoji: "🏛️" },
+  { id: 21, title: "Faire du camping (même dans le jardin)", category: "aventure", emoji: "⛺" },
+  { id: 22, title: "Prendre le bus/train sans destination précise", category: "aventure", emoji: "🚌" },
+  { id: 23, title: "Grimper tout en haut d'une colline ou montagne", category: "aventure", emoji: "⛰️" },
+  { id: 24, title: "Faire un escape game ensemble", category: "aventure", emoji: "🔐" },
+  { id: 25, title: "Aller au marché aux puces", category: "aventure", emoji: "🛍️" },
+  { id: 26, title: "Visiter un jardin botanique", category: "aventure", emoji: "🌿" },
+
+  // Créatif (27-42)
+  { id: 27, title: "Peindre ou dessiner ensemble", category: "créatif", emoji: "🎨" },
+  { id: 28, title: "Faire un album photo ensemble", category: "créatif", emoji: "📷" },
+  { id: 29, title: "Écrire un poème à deux", category: "créatif", emoji: "✍️" },
+  { id: 30, title: "Faire de la poterie ou modelage", category: "créatif", emoji: "🏺" },
+  { id: 31, title: "Créer une œuvre d'art avec des éléments naturels", category: "créatif", emoji: "🍂" },
+  { id: 32, title: "Apprendre une chanson ensemble", category: "créatif", emoji: "🎤" },
+  { id: 33, title: "Faire un shooting photo en duo", category: "créatif", emoji: "📸" },
+  { id: 34, title: "Construire quelque chose en LEGO", category: "créatif", emoji: "🧱" },
+  { id: 35, title: "Écrire votre histoire d'amour en 10 lignes", category: "créatif", emoji: "📖" },
+  { id: 36, title: "Faire un collage de vos meilleurs moments", category: "créatif", emoji: "🖼️" },
+  { id: 37, title: "Apprendre à tricoter ou coudre ensemble", category: "créatif", emoji: "🧶" },
+  { id: 38, title: "Créer un time capsule ensemble", category: "créatif", emoji: "📦" },
+  { id: 39, title: "Faire un film court avec votre téléphone", category: "créatif", emoji: "🎬" },
+  { id: 40, title: "Décorer votre espace ensemble", category: "créatif", emoji: "🪴" },
+
+  // Quotidien (41-55)
+  { id: 41, title: "Faire les courses ensemble en se tenant la main", category: "quotidien", emoji: "🛒" },
+  { id: 42, title: "Préparer le petit-déjeuner au lit pour l'autre", category: "quotidien", emoji: "🥐" },
+  { id: 43, title: "Faire le ménage ensemble en musique", category: "quotidien", emoji: "🎶" },
+  { id: 44, title: "Prendre un café ensemble chaque matin pendant une semaine", category: "quotidien", emoji: "☕" },
+  { id: 45, title: "Faire une promenade après le dîner", category: "quotidien", emoji: "🌙" },
+  { id: 46, title: "Lire un livre ensemble (chacun un chapitre)", category: "quotidien", emoji: "📚" },
+  { id: 47, title: "Jardiner ensemble", category: "quotidien", emoji: "🌱" },
+  { id: 48, title: "Faire du yoga ou méditer ensemble", category: "quotidien", emoji: "🧘" },
+  { id: 49, title: "Se raconter 3 choses qu'on aime chez l'autre", category: "quotidien", emoji: "💕" },
+  { id: 50, title: "Ranger et organiser un placard ensemble", category: "quotidien", emoji: "🗄️" },
+  { id: 51, title: "Se déconnecter des écrans pendant une journée", category: "quotidien", emoji: "📵" },
+  { id: 52, title: "Adopter une plante et la nommer ensemble", category: "quotidien", emoji: "🪴" },
+  { id: 53, title: "Se coucher tôt et regarder un film au lit", category: "quotidien", emoji: "🎬" },
+
+  // Surprise (54-68)
+  { id: 54, title: "Organiser une surprise pour l'autre", category: "surprise", emoji: "🎉" },
+  { id: 55, title: "Laisser un mot doux quelque part pour l'autre", category: "surprise", emoji: "💝" },
+  { id: 56, title: "Préparer le plat préféré de l'autre sans prévenir", category: "surprise", emoji: "🍽️" },
+  { id: 57, title: "Offrir des fleurs sans raison", category: "surprise", emoji: "💐" },
+  { id: 58, title: "Planifier un rendez-vous mystère", category: "surprise", emoji: "🕵️" },
+  { id: 59, title: "Faire un compliment sincère chaque heure pendant une journée", category: "surprise", emoji: "🥰" },
+  { id: 60, title: "Enregistrer un message vocal d'amour", category: "surprise", emoji: "🎙️" },
+  { id: 61, title: "Acheter le dessert préféré de l'autre en secret", category: "surprise", emoji: "🍰" },
+  { id: 62, title: "Décorer la maison pour célébrer votre couple", category: "surprise", emoji: "🎊" },
+  { id: 63, title: "Préparer une chasse au trésor romantique", category: "surprise", emoji: "🗝️" },
+  { id: 64, title: "Inviter l'autre à un rendez-vous comme au premier jour", category: "surprise", emoji: "💫" },
+  { id: 65, title: "Écrire 10 raisons pourquoi tu l'aimes sur des post-its", category: "surprise", emoji: "📝" },
+  { id: 66, title: "Réveiller l'autre avec son petit-déjeuner préféré", category: "surprise", emoji: "🌞" },
+
+  // Voyage (67-80)
+  { id: 67, title: "Visiter une ville voisine pour la journée", category: "voyage", emoji: "🏘️" },
+  { id: 68, title: "Passer une nuit dans un hôtel de votre ville", category: "voyage", emoji: "🏨" },
+  { id: 69, title: "Essayer un restaurant d'une cuisine du monde", category: "voyage", emoji: "🍜" },
+  { id: 70, title: "Aller voir un spectacle ou concert", category: "voyage", emoji: "🎭" },
+  { id: 71, title: "Prendre le train pour une destination surprise", category: "voyage", emoji: "🚂" },
+  { id: 72, title: "Visiter un château ou monument historique", category: "voyage", emoji: "🏰" },
+  { id: 73, title: "Faire une balade en bateau", category: "voyage", emoji: "⛵" },
+  { id: 74, title: "Aller au cinéma voir un film au hasard", category: "voyage", emoji: "🎥" },
+  { id: 75, title: "Visiter un aquarium ou zoo", category: "voyage", emoji: "🐠" },
+  { id: 76, title: "Aller à une fête foraine ou parc d'attractions", category: "voyage", emoji: "🎢" },
+  { id: 77, title: "Découvrir un nouveau café ou salon de thé", category: "voyage", emoji: "🫖" },
+  { id: 78, title: "Aller à la plage (même en hiver !)", category: "voyage", emoji: "🏖️" },
+  { id: 79, title: "Faire une visite guidée de votre propre ville", category: "voyage", emoji: "🧭" },
+
+  // Gourmand (80-93)
+  { id: 80, title: "Cuisiner une recette d'un autre pays ensemble", category: "gourmand", emoji: "👨‍🍳" },
+  { id: 81, title: "Faire un brunch ensemble le dimanche", category: "gourmand", emoji: "🥞" },
+  { id: 82, title: "Préparer des sushis maison", category: "gourmand", emoji: "🍣" },
+  { id: 83, title: "Faire une dégustation de fromages", category: "gourmand", emoji: "🧀" },
+  { id: 84, title: "Préparer un gâteau ensemble", category: "gourmand", emoji: "🎂" },
+  { id: 85, title: "Faire des crêpes un dimanche matin", category: "gourmand", emoji: "🥞" },
+  { id: 86, title: "Organiser un apéro romantique", category: "gourmand", emoji: "🥂" },
+  { id: 87, title: "Préparer des cookies et les décorer ensemble", category: "gourmand", emoji: "🍪" },
+  { id: 88, title: "Faire une soirée fondue", category: "gourmand", emoji: "🫕" },
+  { id: 89, title: "Tester un food truck ensemble", category: "gourmand", emoji: "🚚" },
+  { id: 90, title: "Créer votre propre cocktail signature", category: "gourmand", emoji: "🍹" },
+  { id: 91, title: "Faire un pique-nique gastronomique", category: "gourmand", emoji: "🧺" },
+  { id: 92, title: "Commander le plat le plus bizarre du menu", category: "gourmand", emoji: "🤪" },
+
+  // Bien-être (93-101)
+  { id: 93, title: "Se faire un massage mutuel", category: "bien-être", emoji: "💆" },
+  { id: 94, title: "Prendre un bain moussant ensemble", category: "bien-être", emoji: "🫧" },
+  { id: 95, title: "Faire une séance de spa maison", category: "bien-être", emoji: "🧖" },
+  { id: 96, title: "Méditer ensemble pendant 10 minutes", category: "bien-être", emoji: "🕊️" },
+  { id: 97, title: "Faire une digital detox d'un week-end", category: "bien-être", emoji: "🌿" },
+  { id: 98, title: "Se faire des masques de beauté ensemble", category: "bien-être", emoji: "🧴" },
+  { id: 99, title: "Faire une longue promenade en forêt", category: "bien-être", emoji: "🌲" },
+  { id: 100, title: "Se dire merci pour 5 choses chaque soir", category: "bien-être", emoji: "🙏" },
+  { id: 101, title: "Créer un rituel du soir à deux", category: "bien-être", emoji: "🌛" },
+];

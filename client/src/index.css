@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 30% 96%;
+    --foreground: 20 20% 15%;
+
+    --card: 30 25% 98%;
+    --card-foreground: 20 20% 15%;
+
+    --popover: 30 25% 98%;
+    --popover-foreground: 20 20% 15%;
+
+    --primary: 12 45% 55%;
+    --primary-foreground: 30 30% 96%;
+
+    --secondary: 350 35% 85%;
+    --secondary-foreground: 20 20% 15%;
+
+    --muted: 30 20% 92%;
+    --muted-foreground: 20 10% 50%;
+
+    --accent: 30 40% 88%;
+    --accent-foreground: 20 20% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 30 20% 88%;
+    --input: 30 20% 88%;
+    --ring: 12 45% 55%;
+
+    --radius: 0.75rem;
+
+    --terracotta: 12 45% 55%;
+    --rose-pastel: 350 35% 85%;
+    --beige: 30 30% 96%;
+    --creme: 30 25% 98%;
+    --warm-brown: 20 20% 15%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .font-handwritten {
+    font-family: 'Dancing Script', cursive;
+  }
+
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-body {
+    font-family: 'Lato', sans-serif;
+  }
+}
