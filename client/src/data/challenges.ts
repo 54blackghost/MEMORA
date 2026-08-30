@@ -3,6 +3,10 @@ export interface Challenge {
   title: string;
   category: "romantique" | "aventure" | "créatif" | "quotidien" | "surprise" | "voyage" | "gourmand" | "bien-être";
   emoji: string;
+
+  access: "free" | "premium";
+
+  isActive: boolean;
 }
 
 export const challenges: Challenge[] = [

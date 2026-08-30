@@ -1,99 +1,122 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
-export interface CompletedChallenge {
-  challengeId: number;
-  date: string;
-  location: string;
-  description: string;
-  emotionRating: number;
-  photos: string[]; // base64
-  completedAt: string;
+import type { AppState } from "@/types/app";
+import type { Memory } from "@/types/memory";
+import type { Profile } from "@/types/profile";
+import type { Subscription } from "@/types/subscription";
+
+import {
+  loadAppState,
+  saveAppState,
+} from "@/lib/storage/appStorage";
+
+interface AppContextValue extends AppState {
+  setProfile: (profile: Profile) => void;
+  addMemory: (memory: Memory) => void;
+  updateMemory: (
+    memoryId: string,
+    updates: Partial<Memory>
+  ) => void;
+  removeMemory: (memoryId: string) => void;
+  setOnboardingDone: (done: boolean) => void;
 }
 
-export interface UserProfile {
-  coupleName: string;
-  startDate?: string;
-}
+const AppContext =
+  createContext<AppContextValue | undefined>(
+    undefined
+  );
 
-interface AppState {
-  profile: UserProfile | null;
-  completedChallenges: CompletedChallenge[];
-  onboardingDone: boolean;
-}
-
-interface AppContextType extends AppState {
-  setProfile: (profile: UserProfile) => void;
-  completeChallenge: (challenge: CompletedChallenge) => void;
-  setOnboardingDone: () => void;
-  getCompletedChallenge: (id: number) => CompletedChallenge | undefined;
-  isCompleted: (id: number) => boolean;
-}
-
-const AppContext = createContext<AppContextType | null>(null);
-
-const STORAGE_KEY = "createur-souvenirs-data";
-
-function loadState(): AppState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return { profile: null, completedChallenges: [], onboardingDone: false };
-}
-
-function saveState(state: AppState) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AppState>(loadState);
+export function AppProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [state, setState] = useState<AppState>(
+    loadAppState
+  );
 
   useEffect(() => {
-    saveState(state);
+    saveAppState(state);
   }, [state]);
 
-  const setProfile = (profile: UserProfile) => {
-    setState((s) => ({ ...s, profile }));
-  };
+  const value = useMemo<AppContextValue>(
+    () => ({
+      ...state,
 
-  const completeChallenge = (challenge: CompletedChallenge) => {
-    setState((s) => ({
-      ...s,
-      completedChallenges: [
-        ...s.completedChallenges.filter((c) => c.challengeId !== challenge.challengeId),
-        challenge,
-      ],
-    }));
-  };
+      setProfile: (profile) => {
+        setState((current) => ({
+          ...current,
+          profile,
+        }));
+      },
 
-  const setOnboardingDone = () => {
-    setState((s) => ({ ...s, onboardingDone: true }));
-  };
+      addMemory: (memory) => {
+        setState((current) => ({
+          ...current,
+          memories: [
+            ...current.memories,
+            memory,
+          ],
+        }));
+      },
 
-  const getCompletedChallenge = (id: number) =>
-    state.completedChallenges.find((c) => c.challengeId === id);
+      updateMemory: (memoryId, updates) => {
+        setState((current) => ({
+          ...current,
+          memories: current.memories.map(
+            (memory) =>
+              memory.id === memoryId
+                ? {
+                    ...memory,
+                    ...updates,
+                  }
+                : memory
+          ),
+        }));
+      },
 
-  const isCompleted = (id: number) =>
-    state.completedChallenges.some((c) => c.challengeId === id);
+      removeMemory: (memoryId) => {
+        setState((current) => ({
+          ...current,
+          memories: current.memories.filter(
+            (memory) =>
+              memory.id !== memoryId
+          ),
+        }));
+      },
+
+      setOnboardingDone: (done) => {
+        setState((current) => ({
+          ...current,
+          onboardingDone: done,
+        }));
+      },
+    }),
+    [state]
+  );
 
   return (
-    <AppContext.Provider
-      value={{
-        ...state,
-        setProfile,
-        completeChallenge,
-        setOnboardingDone,
-        getCompletedChallenge,
-        isCompleted,
-      }}
-    >
+    <AppContext.Provider value={value}>
       {children}
     </AppContext.Provider>
   );
 }
 
 export function useApp() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error("useApp must be used within AppProvider");
-  return ctx;
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error(
+      "useApp must be used inside AppProvider"
+    );
+  }
+
+  return context;
 }
