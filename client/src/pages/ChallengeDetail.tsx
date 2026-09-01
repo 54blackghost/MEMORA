@@ -1,190 +1,182 @@
-import { useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useApp, CompletedChallenge } from "@/context/AppContext";
-import { challenges } from "@/data/challenges";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Heart, ArrowLeft, Camera, X, Check } from "lucide-react";
+import {
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+
 import confetti from "canvas-confetti";
-import { getLimit } from "@/lib/subscription/entitlements";
-import { PhotoUploader } from "@/features/memories/components/PhotoUploader";
+
+import {
+  ArrowLeft,
+  Check,
+} from "lucide-react";
+
+import {
+  useApp,
+} from "@/context/AppContext";
+
+import {
+  challenges,
+} from "@/data/challenges";
+
+import {
+  can,
+  getLimit,
+} from "@/lib/subscription/entitlements";
+
+/*
+import {
+  createMemory,
+} from "@/features/memories/utils/createMemory";
+
+*/
+import {
+  MemoryForm,
+} from "@/features/memories/components/MemoryForm";
+
+import type {
+  MemoryFormValues,
+} from "@/features/memories/schemas/memorySchema";
 
 const ChallengeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { completeChallenge, getCompletedChallenge } = useApp();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const challenge = challenges.find((c) => c.id === Number(id));
-  const existing = getCompletedChallenge(Number(id));
+  const {
+    memories,
+    addMemory,
+    subscription,
+  } = useApp();
 
-  const [date, setDate] = useState(existing?.date || "");
-  const [location, setLocation] = useState(existing?.location || "");
-  const [description, setDescription] = useState(existing?.description || "");
-  const [emotionRating, setEmotionRating] = useState(existing?.emotionRating || 0);
-  const [photos, setPhotos] = useState<string[]>(existing?.photos || []);
-  const [validated, setValidated] = useState(!!existing);
+  const challengeId = Number(id);
+
+  const challenge = challenges.find(
+    (item) => item.id === challengeId
+  );
+
+  const existingMemory = useMemo(
+    () =>
+      memories.find(
+        (memory) =>
+          memory.challengeId ===
+          challengeId
+      ),
+    [memories, challengeId]
+  );
+
+  const [validated, setValidated] =
+    useState(Boolean(existingMemory));
 
   if (!challenge) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <p>Défi introuvable</p>
       </div>
     );
   }
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) {
-          setPhotos((prev) => [...prev, ev.target!.result as string]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  };
+  const maxPhotos =
+    getLimit(
+      "maxPhotosPerMemory",
+      subscription
+    ) ?? 1;
 
-  const removePhoto = (index: number) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = () => {
-    if (!date || emotionRating === 0) return;
-    const memory: CompletedChallenge = {
+  const handleSubmit = (
+    values: MemoryFormValues,
+    photos: string[]
+  ) => {
+    const memory = createMemory({
       challengeId: challenge.id,
-      date,
-      location,
-      description,
-      emotionRating,
+      values,
       photos,
-      completedAt: new Date().toISOString(),
-    };
-    completeChallenge(memory);
+    });
+
+    addMemory(memory);
+
     setValidated(true);
 
     confetti({
       particleCount: 80,
       spread: 70,
-      origin: { y: 0.6 },
-      colors: ["#c4735a", "#e8b4b8", "#f5e6d3", "#d4a574"],
+      origin: {
+        y: 0.6,
+      },
+      colors: [
+        "#c4735a",
+        "#e8b4b8",
+        "#f5e6d3",
+        "#d4a574",
+      ],
     });
-  };
-  const maxPhotos = getLimit(
-    "maxPhotosPerMemory",
-    1000
-  );
-
-  const handleAddPhotos = (newPhotos: string[]): void => {
-    setPhotos((prev) => [...prev, ...newPhotos]);
   };
 
   return (
     <div className="min-h-screen bg-background pb-8">
-      <div className="px-6 pt-6 max-w-lg mx-auto">
-        {/* Header */}
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-muted-foreground mb-4 text-sm">
-          <ArrowLeft className="w-4 h-4" /> Retour
+      <div className="mx-auto max-w-lg px-6 pt-6">
+
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="mb-4 flex items-center gap-1 text-sm text-muted-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour
         </button>
 
-        <div className="text-center mb-6 animate-fade-in">
-          <span className="text-5xl mb-3 block">{challenge.emoji}</span>
-          <h1 className="text-2xl font-display font-bold text-foreground">
+        <div className="mb-6 animate-fade-in text-center">
+          <span className="mb-3 block text-5xl">
+            {challenge.emoji}
+          </span>
+
+          <h1 className="font-display text-2xl font-bold text-foreground">
             {challenge.title}
           </h1>
-          <span className="text-xs text-muted-foreground capitalize bg-secondary px-3 py-1 rounded-full mt-2 inline-block">
+
+          <span className="mt-2 inline-block rounded-full bg-secondary px-3 py-1 text-xs capitalize text-muted-foreground">
             {challenge.category}
           </span>
         </div>
 
         {validated && (
-          <div className="text-center mb-6 animate-fade-in">
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full">
-              <Check className="w-4 h-4" />
-              <span className="font-handwritten text-lg">Souvenir validé !</span>
+          <div className="mb-6 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-primary">
+              <Check className="h-4 w-4" />
+
+              <span className="font-handwritten text-lg">
+                Souvenir validé !
+              </span>
             </div>
           </div>
         )}
 
-        {/* Form */}
-        <Card className="border-none shadow-md animate-fade-in">
-          <CardContent className="p-6 space-y-5">
-            <div className="space-y-2">
-              <Label className="font-handwritten text-lg">📅 Quand ?</Label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="rounded-full"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className="font-handwritten text-lg">📍 Où ?</Label>
-              <Input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Ex: Paris, chez nous, au parc..."
-                className="rounded-full"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className="font-handwritten text-lg">💬 Comment c'était ?</Label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Racontez votre moment..."
-                className="rounded-lg min-h-[100px]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className="font-handwritten text-lg">❤️ Note émotion</Label>
-              <div className="flex gap-2 justify-center">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setEmotionRating(n)}
-                    className="transition-transform hover:scale-110"
-                  >
-                    <Heart
-                      className={`w-8 h-8 transition-colors ${
-                        n <= emotionRating
-                          ? "fill-primary text-primary"
-                          : "text-muted"
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Photos */}
-                  <PhotoUploader
-                    photos={photos}
-                    maxPhotos={maxPhotos}
-                    onAdd={handleAddPhotos}
-                    onRemove={removePhoto}
-                  />
-
-            {!validated && (
-              <Button
-                onClick={handleSubmit}
-                size="lg"
-                className="w-full rounded-full text-lg font-handwritten"
-                disabled={!date || emotionRating === 0}
-              >
-                Valider le souvenir 💝
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+        <MemoryForm
+          initialValues={
+            existingMemory
+              ? {
+                  date:
+                    existingMemory.date,
+                  location:
+                    existingMemory.location,
+                  description:
+                    existingMemory.description,
+                  emotionRating:
+                    existingMemory.emotionRating,
+                }
+              : undefined
+          }
+          initialPhotos={
+            existingMemory?.photos.map(
+              (photo) => photo.url
+            ) ?? []
+          }
+          maxPhotos={maxPhotos}
+          validated={validated}
+          onSubmit={handleSubmit}
+        />
       </div>
     </div>
   );
