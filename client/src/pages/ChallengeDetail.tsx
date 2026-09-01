@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, ArrowLeft, Camera, X, Check } from "lucide-react";
 import confetti from "canvas-confetti";
+import { getLimit } from "@/lib/subscription/entitlements";
+import { PhotoUploader } from "@/features/memories/components/PhotoUploader";
 
 const ChallengeDetail = () => {
   const { id } = useParams();
@@ -72,6 +74,14 @@ const ChallengeDetail = () => {
       origin: { y: 0.6 },
       colors: ["#c4735a", "#e8b4b8", "#f5e6d3", "#d4a574"],
     });
+  };
+  const maxPhotos = getLimit(
+    "maxPhotosPerMemory",
+    1000
+  );
+
+  const handleAddPhotos = (newPhotos: string[]): void => {
+    setPhotos((prev) => [...prev, ...newPhotos]);
   };
 
   return (
@@ -156,37 +166,12 @@ const ChallengeDetail = () => {
             </div>
 
             {/* Photos */}
-            <div className="space-y-2">
-              <Label className="font-handwritten text-lg">📷 Photos</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {photos.map((photo, i) => (
-                  <div key={i} className="aspect-square relative rounded-lg overflow-hidden">
-                    <img src={photo} alt="" className="w-full h-full object-cover" />
-                    <button
-                      onClick={() => removePhoto(i)}
-                      className="absolute top-1 right-1 bg-foreground/60 text-background rounded-full p-0.5"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="aspect-square rounded-lg border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-                >
-                  <Camera className="w-6 h-6" />
-                  <span className="text-[10px] mt-1">Ajouter</span>
-                </button>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={handlePhotoUpload}
-              />
-            </div>
+                  <PhotoUploader
+                    photos={photos}
+                    maxPhotos={maxPhotos}
+                    onAdd={handleAddPhotos}
+                    onRemove={removePhoto}
+                  />
 
             {!validated && (
               <Button

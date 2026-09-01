@@ -4,14 +4,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider, useApp } from "@/context/AppContext";
-import Onboarding from "./pages/Onboarding";
-import Profile from "./pages/Profile";
-import Dashboard from "./pages/Dashboard";
-import ChallengesList from "./pages/ChallengesList";
-import ChallengeDetail from "./pages/ChallengeDetail";
-import Feed from "./pages/Feed";
-import Album from "./pages/Album";
-import NotFound from "./pages/NotFound";
+import Onboarding from "../pages/Onboarding";
+import Profile from "../pages/Profile";
+import Dashboard from "../pages/Dashboard";
+import ChallengesList from "../pages/ChallengesList";
+import ChallengeDetail from "../pages/ChallengeDetail";
+import Feed from "../pages/Feed";
+import Album from "../pages/Album";
+import NotFound from "../pages/NotFound";
 
 const queryClient = new QueryClient();
 

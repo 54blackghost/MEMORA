@@ -1,17 +1,12 @@
-import { Memory } from "@/types/memory";
-
 export function createMemoryId(): string {
-  return crypto.randomUUID();
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2)}`;
 }
-
-
-const memory: Memory = {
-  id: createMemoryId(),
-  challengeId: challenge.id,
-  date,
-  location,
-  description,
-  emotionRating,
-  photos,
-  completedAt: new Date().toISOString(),
-};
