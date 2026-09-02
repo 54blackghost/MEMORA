@@ -1,5 +1,5 @@
 export interface MemoryPhoto {
-  id?: string;
+  id: string;
   url: string;
   width?: number;
   height?: number;
@@ -7,16 +7,12 @@ export interface MemoryPhoto {
 }
 
 export interface Memory {
-  id?: string;
+  id: string;
   challengeId: number;
-
   date: string;
   location?: string;
   description?: string;
-
   emotionRating: number;
-
   photos: MemoryPhoto[];
-
   completedAt: string;
 }

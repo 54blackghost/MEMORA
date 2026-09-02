@@ -8,7 +8,7 @@ import BottomNav from "@/components/BottomNav";
 import jsPDF from "jspdf";
 
 const Album = () => {
-  const { completedChallenges, profile } = useApp();
+
   const [currentPage, setCurrentPage] = useState(0);
 
   const memories = useMemo(() => {

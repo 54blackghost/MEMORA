@@ -1,185 +1,59 @@
-import {
-  useMemo,
-  useState,
-} from "react";
-
-import {
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-
+import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import confetti from "canvas-confetti";
-
-import {
-  ArrowLeft,
-  Check,
-} from "lucide-react";
-
-import {
-  useApp,
-} from "@/context/AppContext";
-
-import {
-  challenges,
-} from "@/data/challenges";
-
-import {
-  can,
-  getLimit,
-} from "@/lib/subscription/entitlements";
-
-/*
-import {
-  createMemory,
-} from "@/features/memories/utils/createMemory";
-
-*/
-import {
-  MemoryForm,
-} from "@/features/memories/components/MemoryForm";
-
-import type {
-  MemoryFormValues,
-} from "@/features/memories/schemas/memorySchema";
+import { ArrowLeft, Check, Lock, Sparkles } from "lucide-react";
+import { useApp } from "@/context/AppContext";
+import { challenges } from "@/data/challenges";
+import { can, getLimit } from "@/lib/subscription/entitlements";
+import { MemoryForm } from "@/features/memories/components/MemoryForm";
+import { createMemory } from "@/features/memories/utils/createMemory";
+import { canCreateMemory, getRemainingMemorySlots } from "@/features/memories/utils/memoryEntitlements";
+import type { MemoryFormValues } from "@/features/memories/schemas/memorySchema";
 
 const ChallengeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const {
-    memories,
-    addMemory,
-    subscription,
-  } = useApp();
-
+  const { memories, addMemory, subscription } = useApp();
   const challengeId = Number(id);
+  const challenge = challenges.find((item) => item.id === challengeId);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formKey, setFormKey] = useState(0);
+  const [success, setSuccess] = useState(false);
 
-  const challenge = challenges.find(
-    (item) => item.id === challengeId
-  );
+  const challengeMemories = useMemo(() => memories.filter((memory) => memory.challengeId === challengeId), [memories, challengeId]);
 
-  const existingMemory = useMemo(
-    () =>
-      memories.find(
-        (memory) =>
-          memory.challengeId ===
-          challengeId
-      ),
-    [memories, challengeId]
-  );
-
-  const [validated, setValidated] =
-    useState(Boolean(existingMemory));
-
-  if (!challenge) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Défi introuvable</p>
-      </div>
-    );
+  if (!challenge || !Number.isInteger(challengeId)) {
+    return <div className="flex min-h-screen items-center justify-center px-6"><div className="text-center"><p className="font-display text-lg font-semibold">Défi introuvable</p><button type="button" onClick={() => navigate("/challenges")} className="mt-3 text-sm text-primary underline">Retour aux défis</button></div></div>;
   }
 
-  const maxPhotos =
-    getLimit(
-      "maxPhotosPerMemory",
-      subscription
-    ) ?? 1;
+  const hasPremiumAccess = challenge.access === "free" || can("premium_challenges", subscription);
+  const canCreate = canCreateMemory(memories, subscription);
+  const planMaxPhotos = Math.max(1, getLimit("maxPhotosPerMemory", subscription) ?? 1);
+  const effectiveMaxPhotos = can("multiple_photos", subscription) ? planMaxPhotos : 1;
+  const remainingMemorySlots = getRemainingMemorySlots(memories, subscription);
 
-  const handleSubmit = (
-    values: MemoryFormValues,
-    photos: string[]
-  ) => {
-    const memory = createMemory({
-      challengeId: challenge.id,
-      values,
-      photos,
-    });
-
-    addMemory(memory);
-
-    setValidated(true);
-
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: {
-        y: 0.6,
-      },
-      colors: [
-        "#c4735a",
-        "#e8b4b8",
-        "#f5e6d3",
-        "#d4a574",
-      ],
-    });
+  const handleSubmit = async (values: MemoryFormValues, photos: string[]) => {
+    if (!canCreate || !hasPremiumAccess) return;
+    setIsSubmitting(true);
+    setSuccess(false);
+    try {
+      addMemory(createMemory({ challengeId: challenge.id, values, photos: photos.slice(0, effectiveMaxPhotos) }));
+      setSuccess(true);
+      setFormKey((current) => current + 1);
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  return (
-    <div className="min-h-screen bg-background pb-8">
-      <div className="mx-auto max-w-lg px-6 pt-6">
-
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="mb-4 flex items-center gap-1 text-sm text-muted-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Retour
-        </button>
-
-        <div className="mb-6 animate-fade-in text-center">
-          <span className="mb-3 block text-5xl">
-            {challenge.emoji}
-          </span>
-
-          <h1 className="font-display text-2xl font-bold text-foreground">
-            {challenge.title}
-          </h1>
-
-          <span className="mt-2 inline-block rounded-full bg-secondary px-3 py-1 text-xs capitalize text-muted-foreground">
-            {challenge.category}
-          </span>
-        </div>
-
-        {validated && (
-          <div className="mb-6 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-primary">
-              <Check className="h-4 w-4" />
-
-              <span className="font-handwritten text-lg">
-                Souvenir validé !
-              </span>
-            </div>
-          </div>
-        )}
-
-        <MemoryForm
-          initialValues={
-            existingMemory
-              ? {
-                  date:
-                    existingMemory.date,
-                  location:
-                    existingMemory.location,
-                  description:
-                    existingMemory.description,
-                  emotionRating:
-                    existingMemory.emotionRating,
-                }
-              : undefined
-          }
-          initialPhotos={
-            existingMemory?.photos.map(
-              (photo) => photo.url
-            ) ?? []
-          }
-          maxPhotos={maxPhotos}
-          validated={validated}
-          onSubmit={handleSubmit}
-        />
-      </div>
-    </div>
-  );
+  return <div className="min-h-screen bg-background pb-8"><div className="mx-auto max-w-lg px-6 pt-6">
+    <button type="button" onClick={() => navigate(-1)} className="mb-4 flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="h-4 w-4" />Retour</button>
+    <div className="mb-6 animate-fade-in text-center"><span className="mb-3 block text-5xl">{challenge.emoji}</span><h1 className="font-display text-2xl font-bold text-foreground">{challenge.title}</h1><span className="mt-2 inline-block rounded-full bg-secondary px-3 py-1 text-xs capitalize text-muted-foreground">{challenge.category}</span>{challengeMemories.length > 0 && <p className="mt-2 text-xs text-muted-foreground">{challengeMemories.length} souvenir{challengeMemories.length > 1 ? "s" : ""} déjà enregistré{challengeMemories.length > 1 ? "s" : ""}</p>}</div>
+    {!hasPremiumAccess ? <UpgradeMessage /> : !canCreate ? <LimitMessage remaining={remainingMemorySlots} /> : <>{success && <div className="mb-6 rounded-2xl bg-primary/10 p-4 text-center text-primary"><div className="mb-1 flex items-center justify-center gap-2"><Check className="h-4 w-4" /><span className="font-handwritten text-lg">Souvenir enregistré !</span></div><p className="text-xs text-muted-foreground">Tu peux en créer un autre pour ce même défi.</p></div>}<MemoryForm key={formKey} maxPhotos={effectiveMaxPhotos} isSubmitting={isSubmitting} onSubmit={handleSubmit} /></>}
+  </div></div>;
 };
+
+function UpgradeMessage() { return <div className="rounded-2xl border border-border bg-card p-6 text-center shadow-md"><div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary"><Lock className="h-5 w-5 text-muted-foreground" /></div><h2 className="font-display text-lg font-semibold">Défi Premium</h2><p className="mt-2 text-sm text-muted-foreground">Ce défi est réservé aux abonnés Premium. Passe à un abonnement supérieur pour débloquer les défis premium.</p><div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground"><Sparkles className="h-4 w-4 text-primary" />Plus de défis, plus de souvenirs.</div></div>; }
+function LimitMessage({ remaining }: { remaining: number | null }) { return <div className="rounded-2xl border border-border bg-card p-6 text-center shadow-md"><span className="text-4xl">📚</span><h2 className="mt-3 font-display text-lg font-semibold">Limite de souvenirs atteinte</h2><p className="mt-2 text-sm text-muted-foreground">Ton abonnement actuel ne permet plus de créer de nouveaux souvenirs. Passe à une formule supérieure pour continuer.</p>{remaining !== null && <p className="mt-3 text-xs text-muted-foreground">Places restantes : {remaining}</p>}</div>; }
 
 export default ChallengeDetail;
