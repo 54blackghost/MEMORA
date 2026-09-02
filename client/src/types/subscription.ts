@@ -31,10 +31,8 @@ export interface Plan {
   id: PlanId;
   name: string;
   description: string;
-
   priceMonthly: number;
   priceYearly?: number;
-
   features: Feature[];
   limits: PlanLimits;
 }
@@ -42,10 +40,8 @@ export interface Plan {
 export interface Subscription {
   plan: PlanId;
   status: SubscriptionStatus;
-
   startedAt?: string;
   currentPeriodStart?: string;
   currentPeriodEnd?: string;
-
   cancelAtPeriodEnd?: boolean;
 }

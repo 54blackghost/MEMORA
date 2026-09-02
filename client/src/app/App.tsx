@@ -11,6 +11,7 @@ import ChallengesList from "../pages/ChallengesList";
 import ChallengeDetail from "../pages/ChallengeDetail";
 import Feed from "../pages/Feed";
 import Album from "../pages/Album";
+import Subscription from "../pages/Subscription";
 import NotFound from "../pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const AppRoutes = () => {
       <Route path="/challenge/:id" element={<ChallengeDetail />} />
       <Route path="/feed" element={<Feed />} />
       <Route path="/album" element={<Album />} />
+      <Route path="/subscription" element={<Subscription />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
