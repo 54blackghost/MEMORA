@@ -10,7 +10,8 @@ const featureLabels: Record<string, string> = {
   premium_challenges: "Défis premium",
   photo_upload: "1 photo par souvenir",
   multiple_photos: "Plusieurs photos par souvenir",
-  pdf_album: "Album PDF",
+  basic_pdf_export: "Téléchargement de l'album PDF",
+  pdf_album: "Fonctionnalités avancées de l'album",
   printed_album: "Album imprimé",
   ai_memories: "Souvenirs assistés par IA",
   advanced_statistics: "Statistiques avancées",
@@ -169,3 +170,4 @@ const Subscription = () => {
 };
 
 export default Subscription;
+

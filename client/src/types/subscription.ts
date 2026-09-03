@@ -14,6 +14,7 @@ export type Feature =
   | "basic_challenges"
   | "premium_challenges"
   | "photo_upload"
+  | "basic_pdf_export"
   | "multiple_photos"
   | "pdf_album"
   | "printed_album"

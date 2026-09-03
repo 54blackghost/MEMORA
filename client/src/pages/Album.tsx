@@ -1,12 +1,17 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { challenges } from "@/data/challenges";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { Heart, Download, ChevronLeft, ChevronRight, BookOpen, Crown } from "lucide-react";
+import {
+  Heart,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  BookOpen,
+} from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import { can } from "@/lib/subscription/entitlements";
 import jsPDF from "jspdf";
 
 const Album = () => {
@@ -24,13 +29,7 @@ const Album = () => {
     [memories],
   );
 
-  const canExportPdf = can("pdf_album", subscription);
-
   const exportPDF = async () => {
-    if (!canExportPdf) {
-      navigate("/subscription");
-      return;
-    }
 
     const pdf = new jsPDF({
       orientation: "portrait",
@@ -241,8 +240,7 @@ const Album = () => {
           className="mb-3 w-full rounded-full text-lg font-handwritten"
         >
           <Download className="mr-2 h-5 w-5" />
-          Télécharger en PDF
-          {!canExportPdf && <Crown className="ml-2 h-4 w-4" />}
+          Télécharger mon album PDF
         </Button>
 
         <Button
