@@ -1,4 +1,4 @@
-import type { Challenge } from "@/data/challenges";
+import type { challenge } from "@/data/challenge";
 
 export type ChallengeAccess = "free" | "premium";
 
@@ -13,19 +13,19 @@ export type ChallengeAccess = "free" | "premium";
  * be explicitly configured per challenge from the backend/CMS.
  */
 export function getChallengeAccess(
-  challenge: Pick<Challenge, "id" | "access">,
+  challenge: Pick<challenge, "id" | "access">,
 ): ChallengeAccess {
   return challenge.access ?? (challenge.id <= 10 ? "free" : "premium");
 }
 
 export function isFreeChallenge(
-  challenge: Pick<Challenge, "id" | "access">,
+  challenge: Pick<challenge, "id" | "access">,
 ): boolean {
   return getChallengeAccess(challenge) === "free";
 }
 
 export function isPremiumChallenge(
-  challenge: Pick<Challenge, "id" | "access">,
+  challenge: Pick<challenge, "id" | "access">,
 ): boolean {
   return getChallengeAccess(challenge) === "premium";
 }

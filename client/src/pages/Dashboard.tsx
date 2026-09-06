@@ -20,16 +20,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BottomNav from "@/components/BottomNav";
 
-
-
-
 const TOTAL_CHALLENGES = challenges.length;
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { profile, memories, subscription } = useApp();
 
-  const completedCount = memories.length;
+  const completedChallengeIds = useMemo(
+    () => new Set(memories.map((memory) => memory.challengeId)),
+    [memories]
+  );
+
+  const completedCount = completedChallengeIds.size;
 
   const progress = useMemo(
     () =>
@@ -37,11 +39,6 @@ const Dashboard = () => {
         ? Math.min((completedCount / TOTAL_CHALLENGES) * 100, 100)
         : 0,
     [completedCount]
-  );
-
-  const completedChallengeIds = useMemo(
-    () => new Set(memories.map((memory) => memory.challengeId)),
-    [memories]
   );
 
   const dailyChallenge = useMemo(
@@ -233,7 +230,7 @@ const Dashboard = () => {
                     key={memory.id ?? `${memory.challengeId}-${memory.completedAt}`}
                     className="border-none shadow-sm cursor-pointer hover:shadow-md transition-shadow overflow-hidden"
                     onClick={() =>
-                      navigate(`/challenge/${memory.challengeId}`)
+                      navigate(`/memories/${memory.id}`)
                     }
                   >
                     <div className="aspect-square relative bg-secondary">

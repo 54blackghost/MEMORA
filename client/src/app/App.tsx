@@ -9,6 +9,9 @@ import Profile from "../pages/Profile";
 import Dashboard from "../pages/Dashboard";
 import ChallengesList from "../pages/ChallengesList";
 import ChallengeDetail from "../pages/ChallengeDetail";
+import Memories from "../pages/Memories";
+import MemoryDetail from "../pages/MemoryDetail";
+import MemoryEdit from "../pages/MemoryEdit";
 import Feed from "../pages/Feed";
 import Album from "../pages/Album";
 import Subscription from "../pages/Subscription";
@@ -21,23 +24,15 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          !onboardingDone ? (
-            <Navigate to="/onboarding" replace />
-          ) : !profile ? (
-            <Navigate to="/profile" replace />
-          ) : (
-            <Navigate to="/dashboard" replace />
-          )
-        }
-      />
+      <Route path="/" element={!onboardingDone ? <Navigate to="/onboarding" replace /> : !profile ? <Navigate to="/profile" replace /> : <Navigate to="/dashboard" replace />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/challenges" element={<ChallengesList />} />
       <Route path="/challenge/:id" element={<ChallengeDetail />} />
+      <Route path="/memories" element={<Memories />} />
+      <Route path="/memories/:memoryId" element={<MemoryDetail />} />
+      <Route path="/memories/:memoryId/edit" element={<MemoryEdit />} />
       <Route path="/feed" element={<Feed />} />
       <Route path="/album" element={<Album />} />
       <Route path="/subscription" element={<Subscription />} />

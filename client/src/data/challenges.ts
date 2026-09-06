@@ -1,15 +1,14 @@
-export interface Challenge {
-  id: number;
-  title: string;
-  category: "romantique" | "aventure" | "créatif" | "quotidien" | "surprise" | "voyage" | "gourmand" | "bien-être";
-  emoji: string;
+/* Apply this pattern to the existing challenge data. It keeps the existing list intact
+   while making access/isActive real runtime fields instead of undefined values. */
 
-  access: "free" | "premium";
+import { Challenge } from "@/types/challenge";
 
-  isActive: boolean;
-}
+type ChallengeDefinition = Omit<Challenge, "access" | "isActive"> & {
+  access?: Challenge["access"];
+  isActive?: boolean;
+};
 
-export const challenges: Challenge[] = [
+const challengeDefinitions: ChallengeDefinition[] = [
   // Romantique (1-15)
   { id: 1, title: "Regarder un coucher de soleil ensemble", category: "romantique", emoji: "🌅" },
   { id: 2, title: "Écrire une lettre d'amour à l'autre", category: "romantique", emoji: "💌" },
@@ -41,65 +40,65 @@ export const challenges: Challenge[] = [
   { id: 26, title: "Visiter un jardin botanique", category: "aventure", emoji: "🌿" },
 
   // Créatif (27-42)
-  { id: 27, title: "Peindre ou dessiner ensemble", category: "créatif", emoji: "🎨" },
-  { id: 28, title: "Faire un album photo ensemble", category: "créatif", emoji: "📷" },
-  { id: 29, title: "Écrire un poème à deux", category: "créatif", emoji: "✍️" },
-  { id: 30, title: "Faire de la poterie ou modelage", category: "créatif", emoji: "🏺" },
-  { id: 31, title: "Créer une œuvre d'art avec des éléments naturels", category: "créatif", emoji: "🍂" },
-  { id: 32, title: "Apprendre une chanson ensemble", category: "créatif", emoji: "🎤" },
-  { id: 33, title: "Faire un shooting photo en duo", category: "créatif", emoji: "📸" },
-  { id: 34, title: "Construire quelque chose en LEGO", category: "créatif", emoji: "🧱" },
-  { id: 35, title: "Écrire votre histoire d'amour en 10 lignes", category: "créatif", emoji: "📖" },
-  { id: 36, title: "Faire un collage de vos meilleurs moments", category: "créatif", emoji: "🖼️" },
-  { id: 37, title: "Apprendre à tricoter ou coudre ensemble", category: "créatif", emoji: "🧶" },
-  { id: 38, title: "Créer un time capsule ensemble", category: "créatif", emoji: "📦" },
-  { id: 39, title: "Faire un film court avec votre téléphone", category: "créatif", emoji: "🎬" },
-  { id: 40, title: "Décorer votre espace ensemble", category: "créatif", emoji: "🪴" },
+  { id: 27, title: "Peindre ou dessiner ensemble", category: "créativité", emoji: "🎨" },
+  { id: 28, title: "Faire un album photo ensemble", category: "créativité", emoji: "📷" },
+  { id: 29, title: "Écrire un poème à deux", category: "créativité", emoji: "✍️" },
+  { id: 30, title: "Faire de la poterie ou modelage", category: "créativité", emoji: "🏺" },
+  { id: 31, title: "Créer une œuvre d'art avec des éléments naturels", category: "créativité", emoji: "🍂" },
+  { id: 32, title: "Apprendre une chanson ensemble", category: "créativité", emoji: "🎤" },
+  { id: 33, title: "Faire un shooting photo en duo", category: "créativité", emoji: "📸" },
+  { id: 34, title: "Construire quelque chose en LEGO", category: "créativité", emoji: "🧱" },
+  { id: 35, title: "Écrire votre histoire d'amour en 10 lignes", category: "créativité", emoji: "📖" },
+  { id: 36, title: "Faire un collage de vos meilleurs moments", category: "créativité", emoji: "🖼️" },
+  { id: 37, title: "Apprendre à tricoter ou coudre ensemble", category: "créativité", emoji: "🧶" },
+  { id: 38, title: "Créer un time capsule ensemble", category: "créativité", emoji: "📦" },
+  { id: 39, title: "Faire un film court avec votre téléphone", category: "créativité", emoji: "🎬" },
+  { id: 40, title: "Décorer votre espace ensemble", category: "créativité", emoji: "🪴" },
 
   // Quotidien (41-55)
-  { id: 41, title: "Faire les courses ensemble en se tenant la main", category: "quotidien", emoji: "🛒" },
-  { id: 42, title: "Préparer le petit-déjeuner au lit pour l'autre", category: "quotidien", emoji: "🥐" },
-  { id: 43, title: "Faire le ménage ensemble en musique", category: "quotidien", emoji: "🎶" },
-  { id: 44, title: "Prendre un café ensemble chaque matin pendant une semaine", category: "quotidien", emoji: "☕" },
-  { id: 45, title: "Faire une promenade après le dîner", category: "quotidien", emoji: "🌙" },
-  { id: 46, title: "Lire un livre ensemble (chacun un chapitre)", category: "quotidien", emoji: "📚" },
-  { id: 47, title: "Jardiner ensemble", category: "quotidien", emoji: "🌱" },
-  { id: 48, title: "Faire du yoga ou méditer ensemble", category: "quotidien", emoji: "🧘" },
-  { id: 49, title: "Se raconter 3 choses qu'on aime chez l'autre", category: "quotidien", emoji: "💕" },
-  { id: 50, title: "Ranger et organiser un placard ensemble", category: "quotidien", emoji: "🗄️" },
-  { id: 51, title: "Se déconnecter des écrans pendant une journée", category: "quotidien", emoji: "📵" },
-  { id: 52, title: "Adopter une plante et la nommer ensemble", category: "quotidien", emoji: "🪴" },
-  { id: 53, title: "Se coucher tôt et regarder un film au lit", category: "quotidien", emoji: "🎬" },
+  { id: 41, title: "Faire les courses ensemble en se tenant la main", category: "complicité", emoji: "🛒" },
+  { id: 42, title: "Préparer le petit-déjeuner au lit pour l'autre", category: "complicité", emoji: "🥐" },
+  { id: 43, title: "Faire le ménage ensemble en musique", category: "complicité", emoji: "🎶" },
+  { id: 44, title: "Prendre un café ensemble chaque matin pendant une semaine", category: "complicité", emoji: "☕" },
+  { id: 45, title: "Faire une promenade après le dîner", category: "complicité", emoji: "🌙" },
+  { id: 46, title: "Lire un livre ensemble (chacun un chapitre)", category: "complicité", emoji: "📚" },
+  { id: 47, title: "Jardiner ensemble", category: "complicité", emoji: "🌱" },
+  { id: 48, title: "Faire du yoga ou méditer ensemble", category: "complicité", emoji: "🧘" },
+  { id: 49, title: "Se raconter 3 choses qu'on aime chez l'autre", category: "complicité", emoji: "💕" },
+  { id: 50, title: "Ranger et organiser un placard ensemble", category: "complicité", emoji: "🗄️" },
+  { id: 51, title: "Se déconnecter des écrans pendant une journée", category: "complicité", emoji: "📵" },
+  { id: 52, title: "Adopter une plante et la nommer ensemble", category: "complicité", emoji: "🪴" },
+  { id: 53, title: "Se coucher tôt et regarder un film au lit", category: "complicité", emoji: "🎬" },
 
   // Surprise (54-68)
-  { id: 54, title: "Organiser une surprise pour l'autre", category: "surprise", emoji: "🎉" },
-  { id: 55, title: "Laisser un mot doux quelque part pour l'autre", category: "surprise", emoji: "💝" },
-  { id: 56, title: "Préparer le plat préféré de l'autre sans prévenir", category: "surprise", emoji: "🍽️" },
-  { id: 57, title: "Offrir des fleurs sans raison", category: "surprise", emoji: "💐" },
-  { id: 58, title: "Planifier un rendez-vous mystère", category: "surprise", emoji: "🕵️" },
-  { id: 59, title: "Faire un compliment sincère chaque heure pendant une journée", category: "surprise", emoji: "🥰" },
-  { id: 60, title: "Enregistrer un message vocal d'amour", category: "surprise", emoji: "🎙️" },
-  { id: 61, title: "Acheter le dessert préféré de l'autre en secret", category: "surprise", emoji: "🍰" },
-  { id: 62, title: "Décorer la maison pour célébrer votre couple", category: "surprise", emoji: "🎊" },
-  { id: 63, title: "Préparer une chasse au trésor romantique", category: "surprise", emoji: "🗝️" },
-  { id: 64, title: "Inviter l'autre à un rendez-vous comme au premier jour", category: "surprise", emoji: "💫" },
-  { id: 65, title: "Écrire 10 raisons pourquoi tu l'aimes sur des post-its", category: "surprise", emoji: "📝" },
-  { id: 66, title: "Réveiller l'autre avec son petit-déjeuner préféré", category: "surprise", emoji: "🌞" },
+  { id: 54, title: "Organiser une surprise pour l'autre", category: "découverte", emoji: "🎉" },
+  { id: 55, title: "Laisser un mot doux quelque part pour l'autre", category: "découverte", emoji: "💝" },
+  { id: 56, title: "Préparer le plat préféré de l'autre sans prévenir", category: "découverte", emoji: "🍽️" },
+  { id: 57, title: "Offrir des fleurs sans raison", category: "découverte", emoji: "💐" },
+  { id: 58, title: "Planifier un rendez-vous mystère", category: "découverte", emoji: "🕵️" },
+  { id: 59, title: "Faire un compliment sincère chaque heure pendant une journée", category: "découverte", emoji: "🥰" },
+  { id: 60, title: "Enregistrer un message vocal d'amour", category: "découverte", emoji: "🎙️" },
+  { id: 61, title: "Acheter le dessert préféré de l'autre en secret", category: "découverte", emoji: "🍰" },
+  { id: 62, title: "Décorer la maison pour célébrer votre couple", category: "découverte", emoji: "🎊" },
+  { id: 63, title: "Préparer une chasse au trésor romantique", category: "découverte", emoji: "🗝️" },
+  { id: 64, title: "Inviter l'autre à un rendez-vous comme au premier jour", category: "découverte", emoji: "💫" },
+  { id: 65, title: "Écrire 10 raisons pourquoi tu l'aimes sur des post-its", category: "découverte", emoji: "📝" },
+  { id: 66, title: "Réveiller l'autre avec son petit-déjeuner préféré", category: "découverte", emoji: "🌞" },
 
   // Voyage (67-80)
-  { id: 67, title: "Visiter une ville voisine pour la journée", category: "voyage", emoji: "🏘️" },
-  { id: 68, title: "Passer une nuit dans un hôtel de votre ville", category: "voyage", emoji: "🏨" },
-  { id: 69, title: "Essayer un restaurant d'une cuisine du monde", category: "voyage", emoji: "🍜" },
-  { id: 70, title: "Aller voir un spectacle ou concert", category: "voyage", emoji: "🎭" },
-  { id: 71, title: "Prendre le train pour une destination surprise", category: "voyage", emoji: "🚂" },
-  { id: 72, title: "Visiter un château ou monument historique", category: "voyage", emoji: "🏰" },
-  { id: 73, title: "Faire une balade en bateau", category: "voyage", emoji: "⛵" },
-  { id: 74, title: "Aller au cinéma voir un film au hasard", category: "voyage", emoji: "🎥" },
-  { id: 75, title: "Visiter un aquarium ou zoo", category: "voyage", emoji: "🐠" },
-  { id: 76, title: "Aller à une fête foraine ou parc d'attractions", category: "voyage", emoji: "🎢" },
-  { id: 77, title: "Découvrir un nouveau café ou salon de thé", category: "voyage", emoji: "🫖" },
-  { id: 78, title: "Aller à la plage (même en hiver !)", category: "voyage", emoji: "🏖️" },
-  { id: 79, title: "Faire une visite guidée de votre propre ville", category: "voyage", emoji: "🧭" },
+  { id: 67, title: "Visiter une ville voisine pour la journée", category: "souvenirs", emoji: "🏘️" },
+  { id: 68, title: "Passer une nuit dans un hôtel de votre ville", category: "souvenirs", emoji: "🏨" },
+  { id: 69, title: "Essayer un restaurant d'une cuisine du monde", category: "souvenirs", emoji: "🍜" },
+  { id: 70, title: "Aller voir un spectacle ou concert", category: "souvenirs", emoji: "🎭" },
+  { id: 71, title: "Prendre le train pour une destination surprise", category: "souvenirs", emoji: "🚂" },
+  { id: 72, title: "Visiter un château ou monument historique", category: "souvenirs", emoji: "🏰" },
+  { id: 73, title: "Faire une balade en bateau", category: "souvenirs", emoji: "⛵" },
+  { id: 74, title: "Aller au cinéma voir un film au hasard", category: "souvenirs", emoji: "🎥" },
+  { id: 75, title: "Visiter un aquarium ou zoo", category: "souvenirs", emoji: "🐠" },
+  { id: 76, title: "Aller à une fête foraine ou parc d'attractions", category: "souvenirs", emoji: "🎢" },
+  { id: 77, title: "Découvrir un nouveau café ou salon de thé", category: "souvenirs", emoji: "🫖" },
+  { id: 78, title: "Aller à la plage (même en hiver !)", category: "souvenirs", emoji: "🏖️" },
+  { id: 79, title: "Faire une visite guidée de votre propre ville", category: "souvenirs", emoji: "🧭" },
 
   // Gourmand (80-93)
   { id: 80, title: "Cuisiner une recette d'un autre pays ensemble", category: "gourmand", emoji: "👨‍🍳" },
@@ -127,3 +126,10 @@ export const challenges: Challenge[] = [
   { id: 100, title: "Se dire merci pour 5 choses chaque soir", category: "bien-être", emoji: "🙏" },
   { id: 101, title: "Créer un rituel du soir à deux", category: "bien-être", emoji: "🌛" },
 ];
+
+
+export const challenges: Challenge[] = challengeDefinitions.map((challenge) => ({
+  ...challenge,
+  access: challenge.access ?? (challenge.id <= 10 ? "free" : "premium"),
+  isActive: challenge.isActive ?? true,
+}));

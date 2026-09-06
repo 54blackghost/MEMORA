@@ -1,54 +1,24 @@
 import { plans } from "./plans";
-import type {
-  Feature,
-  PlanId,
-  Subscription,
-} from "@/types/subscription";
+import type { Feature, PlanId, Subscription, SubscriptionStatus } from "@/types/subscription";
 
-
-/**
- * The default plan to use if no plan is specified.
- */
 const DEFAULT_PLAN: PlanId = "free";
+const ACTIVE_STATUSES: ReadonlySet<SubscriptionStatus> = new Set(["active", "trialing"]);
 
-/**
- * Retrieves the plan information based on its ID.
- * @param planId The ID of the plan to retrieve.
- * @returns The plan information or the default plan if not found.
- */
+export function isSubscriptionActive(subscription?: Subscription): boolean {
+  if (!subscription) return true; // no subscription object means Free demo access
+  return ACTIVE_STATUSES.has(subscription.status);
+}
+
 export function getPlan(planId?: PlanId) {
-  return plans.find((plan) => plan.id === planId) ?? plans[0];
+  return plans.find((plan) => plan.id === planId) ?? plans.find((plan) => plan.id === DEFAULT_PLAN)!;
 }
 
-/**
- * Checks if a feature is available in the specified subscription.
- * @param feature The feature to check.
- * @param subscription The subscription to check against.
- * @returns True if the feature is available, false otherwise.
- */
-export function can(
-  feature: Feature,
-  subscription?: Subscription
-): boolean {
-  const plan = getPlan(subscription?.plan ?? DEFAULT_PLAN);
-
-  return plan.features.includes(feature);
+export function can(feature: Feature, subscription?: Subscription): boolean {
+  if (!isSubscriptionActive(subscription)) return false;
+  return getPlan(subscription?.plan ?? DEFAULT_PLAN).features.includes(feature);
 }
 
-
-/**
- * Retrieves the limit value for a specific limit type in the given subscription.
- * @param limit The limit type to retrieve.
- * @param subscription The subscription to check against.
- * @returns The limit value or the default limit if not found.
- */
-export function getLimit<
-  K extends keyof ReturnType<typeof getPlan>["limits"]
->(
-  limit: K,
-  subscription?: Subscription
-) {
-  const plan = getPlan(subscription?.plan ?? DEFAULT_PLAN);
-
-  return plan.limits[limit];
+export function getLimit<K extends keyof ReturnType<typeof getPlan>["limits"]>(limit: K, subscription?: Subscription) {
+  if (!isSubscriptionActive(subscription)) return getPlan(DEFAULT_PLAN).limits[limit];
+  return getPlan(subscription?.plan ?? DEFAULT_PLAN).limits[limit];
 }

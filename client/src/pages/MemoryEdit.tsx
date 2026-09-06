@@ -14,15 +14,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { EmotionRating } from "@/features/memories/components/EmotionRating";
 import { PhotoUploader } from "@/features/memories/components/PhotoUploader";
 import { memorySchema, type MemoryFormValues } from "@/features/memories/schemas/memorySchema";
+import { getLimit } from "@/lib/subscription/entitlements";
 
 const MemoryEdit = () => {
   const { memoryId } = useParams<{ memoryId: string }>();
   const navigate = useNavigate();
-  const { memories, updateMemory } = useApp();
   const [photos, setPhotos] = useState<string[]>([]);
+  const { memories, subscription, updateMemory } = useApp();
 
   const memory = useMemo(() => memories.find((item) => item.id === memoryId), [memories, memoryId]);
   const challenge = memory ? challenges.find((item) => item.id === memory.challengeId) : undefined;
+  
 
   const form = useForm<MemoryFormValues>({
     resolver: zodResolver(memorySchema),
@@ -113,7 +115,7 @@ const MemoryEdit = () => {
               <div className="mt-2">
                 <PhotoUploader
                   photos={photos}
-                  maxPhotos={Math.max(1, memory.photos.length || 1)}
+                 maxPhotos={getLimit("maxPhotosPerMemory", subscription)}
                   onAdd={(newPhotos) => setPhotos((current) => [...current, ...newPhotos])}
                   onRemove={(index) => setPhotos((current) => current.filter((_, i) => i !== index))}
                 />

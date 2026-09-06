@@ -1,39 +1,38 @@
-import type { Challenge } from "@/data/challenges";
+import { ChallengeAccess } from "./challengeAccess";
+
 
 interface DailyChallengeOptions {
-  challenges: Challenge[];
+  challenges: ChallengeAccess[];
   completedIds: Set<number>;
-  canAccess: (challenge: Challenge) => boolean;
+  canAccess: (challenge: ChallengeAccess) => boolean;
   date?: Date;
 }
 
-function getDayOfYear(date: Date): number {
-  const start = new Date(date.getFullYear(), 0, 1);
-  const current = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-  return Math.floor(
-    (current.getTime() - start.getTime()) / 86_400_000
-  );
+function dateKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
 }
 
-export function getDailyChallenge({
-  challenges,
-  completedIds,
-  canAccess,
-  date = new Date(),
-}: DailyChallengeOptions): Challenge | undefined {
+function stableHash(value: string): number {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+  return hash;
+}
+
+export function getDailyChallenge({ challenges, completedIds, canAccess, date = new Date() }: DailyChallengeOptions): challenges | undefined {
   const available = challenges.filter(
     (challenge) =>
-      challenge.isActive &&
+      challenge.isActive !== false &&
       !completedIds.has(challenge.id) &&
-      canAccess(challenge)
+      canAccess(challenge),
   );
 
   if (available.length === 0) {
     return challenges.find(
-      (challenge) => challenge.isActive && canAccess(challenge)
+      (challenge) => challenge.isActive !== false && canAccess(challenge),
     );
   }
 
-  return available[getDayOfYear(date) % available.length];
+  return available[stableHash(dateKey(date)) % available.length];
 }

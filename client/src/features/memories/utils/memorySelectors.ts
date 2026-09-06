@@ -2,19 +2,17 @@ import type { Memory } from "@/types/memory";
 
 export function sortMemoriesByCompletedAt(memories: Memory[], direction: "asc" | "desc" = "desc") {
   const multiplier = direction === "asc" ? 1 : -1;
-  return [...memories].sort(
-    (a, b) => multiplier * (new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime()),
-  );
+  return [...memories].sort((a, b) => {
+    const aTime = new Date(a.completedAt).getTime();
+    const bTime = new Date(b.completedAt).getTime();
+    return (aTime - bTime) * multiplier;
+  });
 }
 
-export function getMemoriesForChallenge(memories: Memory[], challengeId: number) {
-  return memories.filter((memory) => memory.challengeId === challengeId);
+export function getMemoryCoverPhoto(memory: Memory) {
+  return memory.photos.find((photo) => Boolean(photo.url));
 }
 
-export function getLatestMemoryForChallenge(memories: Memory[], challengeId: number) {
-  return sortMemoriesByCompletedAt(getMemoriesForChallenge(memories, challengeId))[0];
-}
-
-export function hasMemoryForChallenge(memories: Memory[], challengeId: number) {
-  return memories.some((memory) => memory.challengeId === challengeId);
+export function getUniqueChallengeIds(memories: Memory[]) {
+  return new Set(memories.map((memory) => memory.challengeId));
 }

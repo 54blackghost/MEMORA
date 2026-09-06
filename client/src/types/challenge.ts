@@ -5,7 +5,9 @@ export type ChallengeCategory =
   | "créativité"
   | "découverte"
   | "bien-être"
-  | "souvenirs";
+  | "souvenirs"
+  | "voyage"
+  | "gourmand";
 
 export type ChallengeAccess = "free" | "premium";
 
