@@ -1,6 +1,5 @@
 export interface Profile {
-  name: string;
-  partnerName: string;
-  startDate: string;
+  coupleName: string;
+  startDate?: string;
   avatar?: string;
 }

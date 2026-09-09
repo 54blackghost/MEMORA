@@ -73,10 +73,8 @@ const Dashboard = () => {
       ),
     [memories]
   );
-
-  const isPremium =
-    subscription.plan === "premium" ||
-    subscription.plan === "couple_plus";
+  
+const isPremium = can("premium_challenges", subscription);
 
   return (
     <div className="min-h-screen bg-background pb-24">

@@ -9,22 +9,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EmotionRating } from "./EmotionRating";
 import { PhotoUploader } from "./PhotoUploader";
 import { memorySchema, type MemoryFormValues } from "../schemas/memorySchema";
+import type { StoredPhoto } from "@/lib/media/photoStorage";
 
 interface MemoryFormProps {
+  memoryId: string;
   maxPhotos: number;
-  onSubmit: (values: MemoryFormValues, photos: string[]) => void;
+  initialPhotos?: StoredPhoto[];
+  onSubmit: (values: MemoryFormValues, photos: StoredPhoto[]) => void | Promise<void>;
   isSubmitting?: boolean;
 }
 
-export function MemoryForm({ maxPhotos, onSubmit, isSubmitting = false }: MemoryFormProps) {
-  const { register, handleSubmit, setValue, watch, formState: { isValid } } = useForm<MemoryFormValues>({
+export function MemoryForm({
+  memoryId,
+  maxPhotos,
+  initialPhotos = [],
+  onSubmit,
+  isSubmitting = false,
+}: MemoryFormProps) {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { isValid },
+  } = useForm<MemoryFormValues>({
     resolver: zodResolver(memorySchema),
     mode: "onChange",
     defaultValues: { date: "", location: "", description: "", emotionRating: 0 },
   });
 
   const emotionRating = watch("emotionRating");
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<StoredPhoto[]>(initialPhotos);
 
   return (
     <Card className="border-none shadow-md">
@@ -49,6 +64,7 @@ export function MemoryForm({ maxPhotos, onSubmit, isSubmitting = false }: Memory
           />
           <PhotoUploader
             photos={photos}
+            memoryId={memoryId}
             maxPhotos={maxPhotos}
             disabled={isSubmitting}
             onAdd={(newPhotos) => setPhotos((current) => [...current, ...newPhotos].slice(0, maxPhotos))}

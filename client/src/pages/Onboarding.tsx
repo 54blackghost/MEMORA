@@ -31,7 +31,7 @@ const Onboarding = () => {
     if (current < slides.length - 1) {
       setCurrent(current + 1);
     } else {
-      setOnboardingDone();
+      setOnboardingDone(true);
       navigate("/profile");
     }
   };
@@ -40,13 +40,13 @@ const Onboarding = () => {
     <div className="min-h-screen flex flex-col items-center justify-center px-8 bg-background">
       <div className="w-full max-w-sm mx-auto text-center animate-fade-in" key={current}>
         <div className="mb-8 p-6 rounded-full bg-secondary/50 inline-block">
-          {slides[current].icon}
+          {slides[current]?.icon}
         </div>
         <h1 className="text-3xl font-display font-bold text-foreground mb-4">
-          {slides[current].title}
+          {slides[current]?.title}
         </h1>
         <p className="text-muted-foreground text-lg mb-12 font-body">
-          {slides[current].subtitle}
+          {slides[current]?.subtitle}
         </p>
       </div>
 
@@ -71,7 +71,7 @@ const Onboarding = () => {
 
       {current < slides.length - 1 && (
         <button
-          onClick={() => { setOnboardingDone(); navigate("/profile"); }}
+          onClick={() => { setOnboardingDone(true); navigate("/profile"); }}
           className="mt-4 text-muted-foreground text-sm hover:text-foreground transition-colors"
         >
           Passer

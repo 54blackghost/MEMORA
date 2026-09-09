@@ -4,6 +4,8 @@ export interface MemoryPhoto {
   width?: number;
   height?: number;
   mimeType?: string;
+  sizeBytes?: number;
+  storageKey?: string;
 }
 
 export interface Memory {

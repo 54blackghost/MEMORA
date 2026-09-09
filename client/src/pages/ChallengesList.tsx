@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Check, Lock, Crown } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import type { Memory } from "@/types/memory";
-import { getChallengeAccess } from "@/lib/challenges/challengeAccess";
+import { can } from "@/lib/subscription/entitlements";
 
 type Filter = "all" | "done" | "todo";
 
@@ -29,19 +29,19 @@ const ChallengesList = () => {
   const filteredChallenges = useMemo(() => {
     switch (filter) {
       case "done":
-        return challenges.filter((challenge) =>
-          memoriesByChallenge.has(challenge.id),
-        );
+        return challenges.filter((challenge) => challenge.isActive &&
+           memoriesByChallenge.has(challenge.id),
+         );
       case "todo":
         return challenges.filter(
-          (challenge) => !memoriesByChallenge.has(challenge.id),
-        );
-      default:
-        return challenges;
+          (challenge) => challenge.isActive && !memoriesByChallenge.has(challenge.id),
+         );
+         default:
+         return challenges.filter((challenge) => challenge.isActive);
     }
   }, [filter, memoriesByChallenge]);
 
-  const hasPremium = subscription.plan !== "free";
+  const hasPremium = can("premium_challenges", subscription);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -85,8 +85,8 @@ const ChallengesList = () => {
                 new Date(b.completedAt).getTime() -
                 new Date(a.completedAt).getTime(),
             )[0];
-            const access = getChallengeAccess(challenge);
-            const locked = access === "premium" && !hasPremium;
+            
+            const locked = challenge.access === "premium" && !hasPremium;
 
             return (
               <Card
@@ -113,14 +113,13 @@ const ChallengesList = () => {
                       <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] capitalize text-muted-foreground">
                         {challenge.category}
                       </span>
-                      {access === "free" ? (
+                      {locked ? (
                         <span className="text-[10px] font-medium text-primary">
-                          Gratuit
+                          Premium
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1 text-[10px] font-medium text-primary">
-                          <Crown className="h-3 w-3" />
-                          Premium
+                        <span className="text-[10px] font-medium text-primary">
+                          Gratuit
                         </span>
                       )}
                       {challengeMemories.length > 1 && (

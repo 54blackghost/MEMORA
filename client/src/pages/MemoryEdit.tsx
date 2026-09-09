@@ -15,16 +15,16 @@ import { EmotionRating } from "@/features/memories/components/EmotionRating";
 import { PhotoUploader } from "@/features/memories/components/PhotoUploader";
 import { memorySchema, type MemoryFormValues } from "@/features/memories/schemas/memorySchema";
 import { getLimit } from "@/lib/subscription/entitlements";
+import type { StoredPhoto } from "@/lib/media/photoStorage";
 
 const MemoryEdit = () => {
   const { memoryId } = useParams<{ memoryId: string }>();
   const navigate = useNavigate();
-  const [photos, setPhotos] = useState<string[]>([]);
   const { memories, subscription, updateMemory } = useApp();
+  const [photos, setPhotos] = useState<StoredPhoto[]>([]);
 
   const memory = useMemo(() => memories.find((item) => item.id === memoryId), [memories, memoryId]);
   const challenge = memory ? challenges.find((item) => item.id === memory.challengeId) : undefined;
-  
 
   const form = useForm<MemoryFormValues>({
     resolver: zodResolver(memorySchema),
@@ -33,13 +33,8 @@ const MemoryEdit = () => {
 
   useEffect(() => {
     if (!memory) return;
-    form.reset({
-      date: memory.date,
-      location: memory.location ?? "",
-      description: memory.description ?? "",
-      emotionRating: memory.emotionRating,
-    });
-    setPhotos(memory.photos.map((photo) => photo.url));
+    form.reset({ date: memory.date, location: memory.location ?? "", description: memory.description ?? "", emotionRating: memory.emotionRating });
+    setPhotos(memory.photos.map((photo) => ({ ...photo })));
   }, [memory, form]);
 
   if (!memory) {
@@ -57,75 +52,38 @@ const MemoryEdit = () => {
   const onSubmit = (values: MemoryFormValues) => {
     updateMemory(memory.id, {
       date: values.date,
-      location: values.location?.trim() || undefined,
-      description: values.description?.trim() || undefined,
       emotionRating: values.emotionRating,
-      photos: photos.map((url, index) => ({
-        id: memory.photos[index]?.id ?? `${memory.id}-photo-${index}`,
-        url,
-        ...memory.photos[index],
-      })),
+      photos: photos.map((photo) => ({ ...photo })),
+      ...(values.location?.trim() ? { location: values.location.trim() } : {}),
+      ...(values.description?.trim() ? { description: values.description.trim() } : {}),
     });
     navigate(`/memories/${memory.id}`, { replace: true });
   };
+
+  const maxPhotos = Math.max(1, getLimit("maxPhotosPerMemory", subscription));
 
   return (
     <div className="min-h-screen bg-background pb-24">
       <main className="max-w-lg mx-auto px-4 pt-6">
         <div className="flex items-center gap-2 mb-6">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to={`/memories/${memory.id}`} aria-label="Retour"><ArrowLeft className="w-5 h-5" /></Link>
-          </Button>
-          <div>
-            <p className="text-xs text-muted-foreground">{challenge?.emoji} {challenge?.title}</p>
-            <h1 className="text-2xl font-display font-bold">Modifier le souvenir</h1>
-          </div>
+          <Button variant="ghost" size="icon" asChild><Link to={`/memories/${memory.id}`} aria-label="Retour"><ArrowLeft className="w-5 h-5" /></Link></Button>
+          <div><p className="text-xs text-muted-foreground">{challenge?.emoji} {challenge?.title}</p><h1 className="text-2xl font-display font-bold">Modifier le souvenir</h1></div>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <Card className="border-none shadow-sm">
-            <CardContent className="p-5 space-y-4">
-              <div>
-                <Label htmlFor="date">Date</Label>
-                <Input id="date" type="date" {...form.register("date")} className="mt-1" />
-                {form.formState.errors.date && <p className="text-sm text-destructive mt-1">{form.formState.errors.date.message}</p>}
-              </div>
-              <div>
-                <Label htmlFor="location">Lieu</Label>
-                <Input id="location" {...form.register("location")} className="mt-1" placeholder="Où étiez-vous ?" />
-                {form.formState.errors.location && <p className="text-sm text-destructive mt-1">{form.formState.errors.location.message}</p>}
-              </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" {...form.register("description")} className="mt-1 min-h-32" placeholder="Racontez ce souvenir..." />
-                {form.formState.errors.description && <p className="text-sm text-destructive mt-1">{form.formState.errors.description.message}</p>}
-              </div>
-              <div>
-                <Label>Émotion</Label>
-                <div className="mt-2">
-                  <EmotionRating value={form.watch("emotionRating")} onChange={(value) => form.setValue("emotionRating", value, { shouldValidate: true })} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <Card className="border-none shadow-sm"><CardContent className="p-5 space-y-4">
+            <div><Label htmlFor="date">Date</Label><Input id="date" type="date" {...form.register("date")} className="mt-1" />{form.formState.errors.date && <p className="text-sm text-destructive mt-1">{form.formState.errors.date.message}</p>}</div>
+            <div><Label htmlFor="location">Lieu</Label><Input id="location" {...form.register("location")} className="mt-1" placeholder="Où étiez-vous ?" />{form.formState.errors.location && <p className="text-sm text-destructive mt-1">{form.formState.errors.location.message}</p>}</div>
+            <div><Label htmlFor="description">Description</Label><Textarea id="description" {...form.register("description")} className="mt-1 min-h-32" placeholder="Racontez ce souvenir..." />{form.formState.errors.description && <p className="text-sm text-destructive mt-1">{form.formState.errors.description.message}</p>}</div>
+            <div><Label>Émotion</Label><div className="mt-2"><EmotionRating value={form.watch("emotionRating")} onChange={(value) => form.setValue("emotionRating", value, { shouldValidate: true })} /></div></div>
+          </CardContent></Card>
 
-          <Card className="border-none shadow-sm">
-            <CardContent className="p-5">
-              <Label>Photos</Label>
-              <div className="mt-2">
-                <PhotoUploader
-                  photos={photos}
-                 maxPhotos={getLimit("maxPhotosPerMemory", subscription)}
-                  onAdd={(newPhotos) => setPhotos((current) => [...current, ...newPhotos])}
-                  onRemove={(index) => setPhotos((current) => current.filter((_, i) => i !== index))}
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <Card className="border-none shadow-sm"><CardContent className="p-5">
+            <Label>Photos</Label>
+            <div className="mt-2"><PhotoUploader photos={photos} memoryId={memory.id} maxPhotos={maxPhotos} onAdd={(newPhotos) => setPhotos((current) => [...current, ...newPhotos].slice(0, maxPhotos))} onRemove={(index) => setPhotos((current) => current.filter((_, i) => i !== index))} /></div>
+          </CardContent></Card>
 
-          <Button type="submit" className="w-full rounded-full" disabled={form.formState.isSubmitting}>
-            Enregistrer les modifications
-          </Button>
+          <Button type="submit" className="w-full rounded-full" disabled={form.formState.isSubmitting}>Enregistrer les modifications</Button>
         </form>
       </main>
       <BottomNav />

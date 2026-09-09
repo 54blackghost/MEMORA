@@ -1,7 +1,7 @@
 /* Apply this pattern to the existing challenge data. It keeps the existing list intact
    while making access/isActive real runtime fields instead of undefined values. */
 
-import { Challenge } from "@/types/challenge";
+import type { Challenge } from "@/types/challenge";
 
 type ChallengeDefinition = Omit<Challenge, "access" | "isActive"> & {
   access?: Challenge["access"];

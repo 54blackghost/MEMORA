@@ -1,28 +1,47 @@
 import type { Memory, MemoryPhoto } from "@/types/memory";
+import type { StoredPhoto } from "@/lib/media/photoStorage";
 import type { MemoryFormValues } from "../schemas/memorySchema";
-
-function createId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
+import { createId } from "@/lib/ids/createId";
 
 interface CreateMemoryInput {
+  memoryId?: string;
   challengeId: number;
   values: MemoryFormValues;
-  photos: string[];
+  photos: StoredPhoto[];
 }
 
-export function createMemory({ challengeId, values, photos }: CreateMemoryInput): Memory {
-  const memoryPhotos: MemoryPhoto[] = photos.map((url) => ({ id: createId(), url }));
+export function createMemory({
+  memoryId = createId(),
+  challengeId,
+  values,
+  photos,
+}: CreateMemoryInput): Memory {
+  const memoryPhotos: MemoryPhoto[] = photos.map((photo) => {
+    const normalized: MemoryPhoto = {
+      id: photo.id || createId(),
+      url: photo.url,
+    };
+    if (photo.width !== undefined) normalized.width = photo.width;
+    if (photo.height !== undefined) normalized.height = photo.height;
+    if (photo.mimeType !== undefined) normalized.mimeType = photo.mimeType;
+    if (photo.sizeBytes !== undefined) normalized.sizeBytes = photo.sizeBytes;
+    if (photo.storageKey !== undefined) normalized.storageKey = photo.storageKey;
+    return normalized;
+  });
 
-  return {
-    id: createId(),
+  const memory: Memory = {
+    id: memoryId,
     challengeId,
     date: values.date,
-    location: values.location?.trim() || undefined,
-    description: values.description?.trim() || undefined,
     emotionRating: values.emotionRating,
     photos: memoryPhotos,
     completedAt: new Date().toISOString(),
   };
+
+  const location = values.location?.trim();
+  const description = values.description?.trim();
+  if (location) memory.location = location;
+  if (description) memory.description = description;
+
+  return memory;
 }

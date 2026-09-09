@@ -1,10 +1,9 @@
-import { ChallengeAccess } from "./challengeAccess";
-
+import type { Challenge } from "@/types/challenge";
 
 interface DailyChallengeOptions {
-  challenges: ChallengeAccess[];
+  challenges: Challenge[];
   completedIds: Set<number>;
-  canAccess: (challenge: ChallengeAccess) => boolean;
+  canAccess: (challenge: Challenge) => boolean;
   date?: Date;
 }
 
@@ -20,19 +19,20 @@ function stableHash(value: string): number {
   return hash;
 }
 
-export function getDailyChallenge({ challenges, completedIds, canAccess, date = new Date() }: DailyChallengeOptions): challenges | undefined {
+export function getDailyChallenge({
+  challenges,
+  completedIds,
+  canAccess,
+  date = new Date(),
+}: DailyChallengeOptions): Challenge | undefined {
   const available = challenges.filter(
     (challenge) =>
-      challenge.isActive !== false &&
+      challenge.isActive &&
       !completedIds.has(challenge.id) &&
       canAccess(challenge),
   );
 
-  if (available.length === 0) {
-    return challenges.find(
-      (challenge) => challenge.isActive !== false && canAccess(challenge),
-    );
-  }
+  if (available.length === 0) return undefined;
 
   return available[stableHash(dateKey(date)) % available.length];
 }

@@ -1,13 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { getDailyChallenge } from "@/lib/challenges/dailyChallenge";
-import type { challenges } from "@/data/challenges";
-import { Challenge } from "@/types/challenge";
-
+import type { Challenge } from "@/types/challenge";
 
 const challenges: Challenge[] = [
   { id: 1, title: "A", category: "romantique", emoji: "A", access: "free", isActive: true },
   { id: 2, title: "B", category: "aventure", emoji: "B", access: "free", isActive: true },
-  { id: 3, title: "C", category: "créatif", emoji: "C", access: "premium", isActive: true },
+  { id: 3, title: "C", category: "créativité", emoji: "C", access: "premium", isActive: true },
 ];
 
 describe("daily challenge", () => {
@@ -22,5 +20,14 @@ describe("daily challenge", () => {
     const list = challenges.map((item) => ({ ...item, isActive: item.id !== 1 }));
     const result = getDailyChallenge({ challenges: list, completedIds: new Set(), canAccess: () => true, date: new Date("2026-09-06") });
     expect(result?.id).not.toBe(1);
+  });
+
+  it("does not return a completed challenge when nothing is available", () => {
+    const result = getDailyChallenge({
+      challenges,
+      completedIds: new Set([1, 2, 3]),
+      canAccess: () => true,
+    });
+    expect(result).toBeUndefined();
   });
 });
